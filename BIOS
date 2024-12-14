@@ -1,0 +1,42 @@
+local component = component
+local computer = computer
+
+local function beep(frequency, duration)
+    frequency = math.max(20, math.min(2000, frequency or 440))
+    duration = duration or 0.2
+    computer.beep(frequency, duration)
+end
+
+local function boot()
+    for address in component.list("filesystem") do
+        local proxy = component.proxy(address)
+        if proxy and proxy.exists("/boot.lua") then
+            local handle, err = proxy.open("/boot.lua", "r")
+            if not handle then
+                beep(500, 0.2)
+                error("Failed to open /boot.lua: " .. (err or "unknown error"))
+            end
+            local data = ""
+            repeat
+                local chunk = proxy.read(handle, math.huge)
+                data = data .. (chunk or "")
+            until not chunk
+            proxy.close(handle)
+
+            local ok, err = load(data, "/boot.lua")
+            if not ok then
+                beep(500, 0.2)
+                error("Failed to load /boot.lua: " .. (err or "unknown error"))
+            end
+
+            beep(1000, 0.2)  -- Успешная загрузка
+            ok()
+            return
+        end
+    end
+
+    beep(200, 0.5)  -- Не удалось найти загрузочный файл
+    error("No bootable filesystem found")
+end
+
+boot()
