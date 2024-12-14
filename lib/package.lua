@@ -21,7 +21,7 @@ function package.searchpath(name, path, sep, rep)
   rep = rep or '/'
   sep, rep = '%' .. sep, rep
   name = string.gsub(name, sep, rep)
-  local fs = require("filesystem")
+  local fs = require("fs")
   local errorFiles = {}
   for subPath in string.gmatch(path, "([^;]+)") do
     subPath = string.gsub(subPath, "?", name)
