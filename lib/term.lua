@@ -3,7 +3,7 @@ local term = {}
 local component = require("component")
 local gpu = component.gpu
 
-function term.clear_screen()
+function term.clear()
   local w, h = 80, 25
   gpu.setResolution(resolutionX, resolutionY)
   gpu.fill(1, 1, w, h, " ")
